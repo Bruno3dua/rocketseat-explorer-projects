@@ -60,7 +60,12 @@ a:hover {
 }
 
 ul {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
     margin-top: 7.2rem;
+    gap: 3.2rem;
 }
 
 ul li span {
@@ -81,4 +86,25 @@ ul li {
     color: #090039;
     gap: 3.8rem;
     max-width: 25.7rem;
+}
+
+@media (min-width: 700px) {
+    body {
+        padding-top: 8rem;
+    }
+
+    main {
+        max-width: 1020px;
+        gap: 10rem;
+        display: flex;
+    }
+
+    main>div {
+        max-width: 484px;
+    }
+
+    ul li {
+        gap: 5.33rem;
+        max-width: 450px;
+    }
 }
