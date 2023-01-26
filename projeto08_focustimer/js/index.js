@@ -1,6 +1,6 @@
-import { handleButtonsHide, showElement, hideElement, fillNumber } from "./utils.js"
-import './controls'
-import './timer '
+import { Timer } from "./timer.js"
+import Controls from "./controls.js"
+import Sounds from "./sounds.js"
 
 const btnPlay = document.querySelector('.btn-play')
 const btnPause = document.querySelector('.btn-pause')
@@ -8,57 +8,69 @@ const btnStop = document.querySelector('.btn-stop')
 const btnSet = document.querySelector('.btn-set')
 const buttonSoundOn = document.querySelector('.sound-on')
 const buttonSoundOff = document.querySelector('.sound-off')
-
 const displayMinutes = document.querySelector('.minutes')
 const displaySeconds = document.querySelector('.seconds')
-
+let timerTimeoutEvent
 let minutes = 0
 let seconds = 0
-  
-let timerStarted = false
 
-let timerTimeoutEvent
+const controls = Controls({
+    btnPause,
+    btnPlay,
+    btnSet,
+    btnStop,
+    buttonSoundOn,
+    buttonSoundOff
+})
+
+const timer = Timer({
+    displayMinutes,
+    displaySeconds,
+    timerTimeoutEvent,
+    minutes,
+    seconds,
+    resetControls: controls.reset
+})
+
+const sound = Sounds()
 
 btnPlay.addEventListener('click', function () {
-
-    if (timerStarted) {
-        handleButtonsHide(btnPlay, btnPause)
-        countdown()
-
-    } else {
-        handleButtonsHide(btnPlay, btnPause)
-        handleButtonsHide(btnStop, btnSet)
-
-        countdown()
-
-        timerStarted = true
-    }
+    controls.play()
+    timer.countdown()
+    sound.pressButton()
 })
 
 btnPause.addEventListener('click', function () {
-    clearTimeout(timerTimeoutEvent)
-
-    handleButtonsHide(btnPlay, btnPause)
+    controls.pause()
+    timer.timeout()
+    sound.pressButton()
 })
 
 btnStop.addEventListener('click', function () {
-    resetControls()
-    updateTimerDisplay(0, 0)
-    timerStarted = false
+    controls.reset()
+    timer.reset()
+    sound.pressButton()
 })
 
 btnSet.addEventListener('click', function () {
-    minutes = prompt("Quantos minutos deseja?") || 0
+    let newMinutes = controls.getMinutes()
+    sound.pressButton()
 
-    updateTimerDisplay(minutes, 0)
+    if(!newMinutes) {
+        controls.reset()
+        return
+    }
+
+    minutes = newMinutes
+    timer.updateDisplay(minutes, 0)
 })
 
 buttonSoundOn.addEventListener('click', function () {
-    handleButtonsHide(buttonSoundOff, buttonSoundOn)
+    controls.soundOn()
+    sound.bgAudioPlay()
 })
 
 buttonSoundOff.addEventListener('click', function () {
-    handleButtonsHide(buttonSoundOff, buttonSoundOn)
+    controls.soundOff()
+    sound.bgAudioPause()
 })
-
-

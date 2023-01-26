@@ -1,37 +1,66 @@
+import Sounds from "./sounds.js"
 
-export default function timer() {
+const sound = Sounds
 
-    function updateTimerDisplay(minutes, seconds) {
+export function Timer({
+    displayMinutes,
+    displaySeconds,
+    timerTimeoutEvent,
+    minutes,
+    seconds,
+    resetControls
+}) {
+    function timeout () {
+        clearTimeout(timerTimeoutEvent)
+    }
+
+    function updateDisplay(minutes, seconds) {
         displayMinutes.textContent = fillNumber(minutes)
         displaySeconds.textContent = fillNumber(seconds)
     }
-    
+
+    function reset() {
+        updateDisplay(0, 0)
+        timeout()
+    }
+
     function countdown() {
-}
-    minutes = Number(displayMinutes.textContent)
-    seconds = Number(displaySeconds.textContent)
+        minutes = Number(displayMinutes.textContent)
+        seconds = Number(displaySeconds.textContent)
 
-    timerTimeoutEvent = setTimeout(function () {
+        timerTimeoutEvent = setTimeout(function () {
 
-        if (minutes <= 0 && seconds == 0) {
-            resetControls()
-            timerStarted = false
-            return
+            if (minutes <= 0 && seconds == 0) {
+                resetControls()
+                sound().timerEnd()
+                return
+            }
+
+            if (seconds <= 0) {
+                seconds = 60
+
+                minutes = minutes - 1
+                updateDisplay(minutes - 1, seconds)
+            }
+
+            updateDisplay(minutes, seconds - 1)
+
+            countdown()
+        }, 1000)
+
+        return {
+            countdown
         }
-
-        if (seconds <= 0) {
-            seconds = 60
-
-            minutes = minutes - 1
-            updateTimerDisplay(minutes - 1, seconds)
-        }
-
-        updateTimerDisplay(minutes, seconds - 1)
-
-        countdown()
-    }, 1000)
+    }
 
     return {
-        countdown
+        countdown,
+        updateDisplay,
+        reset,
+        timeout
     }
+}
+
+function fillNumber(number) {
+    return String(number).padStart(2, '0')
 }
